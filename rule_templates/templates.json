@@ -1,0 +1,306 @@
+{
+  "tree": {
+    "base_axiom": "A",
+    "rules": [
+      {
+        "pattern": "A",
+        "replacement": "FT(1, 1)[+({angle})A][-({angle})A]",
+        "probability": 0.5,
+        "axiom": true
+      },
+      {
+        "pattern": "A",
+        "replacement": "FT(1, 1)[++({angle})A][+({angle})A][-({angle})A][--({angle})A]",
+        "probability": 0.4,
+        "axiom": true
+      },
+      {
+        "pattern": "A",
+        "replacement": "FT(1, 1)[-({angle})A]",
+        "probability": 0.1,
+        "axiom": true
+      },
+      {
+        "pattern": "FT(x,y)",
+        "replacement": "FT({(1.2+random.triangular(-0.5, 0.5, random.gauss(0, 1)))*x}, {1.4*y})",
+        "probability": 1.0,
+        "is_parametric": true,
+        "axiom": false
+      },
+      {
+        "pattern": "+(x)",
+        "replacement": "+({x + random.triangular(-10, 10, random.gauss(0, 2))})",
+        "is_parametric": true,
+        "axiom": false
+      },
+      {
+        "pattern": "-(x)",
+        "replacement": "-({x + random.triangular(-10, 10, random.gauss(0, 2))})",
+        "is_parametric": true,
+        "axiom": false
+      }
+    ],
+    "params": {
+      "length": 15,
+      "width": 1,
+      "angle": 15,
+      "iterations": 7
+    },
+    "supports_color": true
+  },
+  "koch_snowflake": {
+    "base_axiom": "F--F--F",
+    "rules": [
+      {
+        "pattern": "F",
+        "replacement": "F+F--F+F",
+        "probability": 1.0,
+        "axiom": false
+      }
+    ],
+    "params": {
+      "length": 10,
+      "width": 1,
+      "angle": 60,
+      "iterations": 5
+    },
+    "supports_color": false
+  },
+  "koch_curve": {
+    "base_axiom": "F",
+    "rules": [
+      {
+        "pattern": "F",
+        "replacement": "F+F-F-F+F",
+        "probability": 1.0,
+        "axiom": false
+      }
+    ],
+    "params": {
+      "length": 5,
+      "width": 1,
+      "angle": 90,
+      "iterations": 6
+    },
+    "supports_color": false
+  },
+    "sierpinski_triangle": {
+    "base_axiom": "F-G-G",
+    "rules": [
+      {
+        "pattern": "F",
+        "replacement": "F-G+F+G-F",
+        "probability": 1.0,
+        "axiom": false
+      },
+      {
+        "pattern": "G",
+        "replacement": "GG",
+        "probability": 1.0,
+        "axiom": false
+      }
+    ],
+    "params": {
+      "length": 8,
+      "width": 1,
+      "angle": 120,
+      "iterations": 6
+    },
+    "supports_color": false
+  },
+
+  "sierpinski_arrowhead": {
+    "base_axiom": "A",
+    "rules": [
+      {
+        "pattern": "A",
+        "replacement": "B-A-B",
+        "probability": 1.0,
+        "axiom": false
+      },
+      {
+        "pattern": "B",
+        "replacement": "A+B+A",
+        "probability": 1.0,
+        "axiom": false
+      }
+    ],
+    "params": {
+      "length": 8,
+      "width": 1,
+      "angle": 60,
+      "iterations": 7
+    },
+    "supports_color": false
+  },
+
+  "dragon_curve": {
+    "base_axiom": "F",
+    "rules": [
+      {
+        "pattern": "F",
+        "replacement": "F+G",
+        "probability": 1.0,
+        "axiom": false
+      },
+      {
+        "pattern": "G",
+        "replacement": "F-G",
+        "probability": 1.0,
+        "axiom": false
+      }
+    ],
+    "params": {
+      "length": 5,
+      "width": 1,
+      "angle": 90,
+      "iterations": 12
+    },
+    "supports_color": false
+  },
+
+  "hilbert_curve": {
+    "base_axiom": "A",
+    "rules": [
+      {
+        "pattern": "A",
+        "replacement": "-BF+AFA+FB-",
+        "probability": 1.0,
+        "axiom": false
+      },
+      {
+        "pattern": "B",
+        "replacement": "+AF-BFB-FA+",
+        "probability": 1.0,
+        "axiom": false
+      }
+    ],
+    "params": {
+      "length": 5,
+      "width": 1,
+      "angle": 90,
+      "iterations": 6
+    },
+    "supports_color": false
+  },
+
+  "levy_c_curve": {
+    "base_axiom": "F",
+    "rules": [
+      {
+        "pattern": "F",
+        "replacement": "+F--F+",
+        "probability": 1.0,
+        "axiom": false
+      }
+    ],
+    "params": {
+      "length": 5,
+      "width": 1,
+      "angle": 45,
+      "iterations": 12
+    },
+    "supports_color": false
+  },
+
+  "fractal_plant": {
+    "base_axiom": "X",
+    "rules": [
+      {
+        "pattern": "X",
+        "replacement": "F+[[X]-X]-F[-FX]+X",
+        "probability": 1.0,
+        "axiom": false
+      },
+      {
+        "pattern": "F",
+        "replacement": "FF",
+        "probability": 1.0,
+        "axiom": false
+      }
+    ],
+    "params": {
+      "length": 5,
+      "width": 1,
+      "angle": 25,
+      "iterations": 6
+    },
+    "supports_color": false
+  },
+
+  "bush": {
+    "axiom": "A",
+    "rules": [
+      {
+        "pattern": "A",
+        "replacement": "FT(L,W)[++(angle)FB(L,W)][+(angle)FB(L,W)][-angle)FB(L,W)][--angle)FB(L,W)]",
+        "probability": 1.0
+      },
+      {
+        "pattern": "FT(x,y)",
+        "replacement": "FT({x*0.85},{y*0.75})FB({x*0.75},{y*0.65})",
+        "is_parametric": true
+      },
+      {
+        "pattern": "FB(x,y)",
+        "replacement": "FB({x*0.8},{y*0.6})[+(20)FL({x*0.5},{y*0.5})][-(20)FL({x*0.5},{y*0.5})]",
+        "is_parametric": true
+      },
+      {
+        "pattern": "FL(x,y)",
+        "replacement": "FL({x*0.9},{y*0.9})",
+        "is_parametric": true
+      }
+    ],
+    "params": {
+      "length": 12,
+      "width": 1.5,
+      "angle": 35,
+      "iterations": 4
+    },
+    "supports_color": true
+  },
+
+  "fern": {
+    "axiom": "X",
+    "rules": [
+      {
+        "pattern": "X",
+        "replacement": "F[+X]F[-X]+X",
+        "probability": 1.0,
+        "axiom": true
+      },
+      {
+        "pattern": "F",
+        "replacement": "FF",
+        "probability": 1.0,
+        "axiom": false
+      }
+    ],
+    "params": {
+      "length": 10,
+      "width": 2,
+      "angle": 30,
+      "iterations": 6
+    },
+    "supports_color": false
+  },
+
+  "placeholder": {
+    "axiom": "F",
+    "rules": [
+      {
+        "pattern": "F",
+        "replacement": "F[+F]F[-F]F",
+        "probability": 1.0
+      }
+    ],
+    "params": {
+      "length": 10,
+      "width": 1,
+      "angle": 25,
+      "iterations": 4
+    },
+    "supports_color": false
+  }
+}
