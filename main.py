@@ -1,25 +1,37 @@
 import argparse
 
 from l_system.system_2d import System2D
-from utils.fractal_logging import drawer_logger, l_system_logger
-from utils.lsystem_loader import get_drawer, get_init_params
+from utils.fractal_logging import l_system_logger
+from utils.lsystem_loader import Loader
+from utils.rule_agent import RuleAgent
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Draw Anything with LSystem")
+    parser = argparse.ArgumentParser(description="Draw Life with LSystem")
     parser.add_argument("--object", help="object init", required=True)
+
     args = parser.parse_args()
 
     object_name = args.object
 
-    print("Object name:", object_name)
-
-    # Validate object supports coloring if requested
-    drawer_class = get_drawer(
-        object_name, templates_path="rule_templates/templates.json"
+    rule_agent = RuleAgent(logger=l_system_logger)
+    init_loader = Loader(
+        object_name,
+        logger=l_system_logger,
+        templates_path="rule_templates/templates.json",
     )
 
-    # Get initial parameters
+    object_template = init_loader.fetch_initial_template()
+
+    prompt = rule_agent.generate_prompt(
+        base_template=object_template, entity=object_name
+    )
+    modified_template = rule_agent.generate_random_object_with_openai(
+        prompt, "rule_templates/agent_template.json"
+    )
+
+    drawer_class = init_loader.get_drawer(modified_template)
+
     (
         init_rules,
         init_length,
@@ -27,17 +39,14 @@ def main():
         init_width,
         init_iter,
         base_axiom,
-    ) = get_init_params(object_name, templates_path="rule_templates/templates.json")
+    ) = init_loader.get_init_params(modified_template)
+
     drawer_class_instance = drawer_class(
-        drawer_logger,
+        l_system_logger,
         base_width=init_width,
         base_length=init_length,
         base_angle=init_angle,
     )
-
-    print(f"Loaded template for: {object_name}")
-    print(f"Parameters: length={init_length}, angle={init_angle}, width={init_width}")
-    print(f"Rules: {len(init_rules)}")
 
     l_system = System2D(axiom=base_axiom, logger=l_system_logger)
     l_system.add_rules(init_rules)

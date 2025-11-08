@@ -11,6 +11,8 @@ dependencies = [
     "colorlog>=6.10.1",
     "matplotlib>=3.10.7",
     "numpy>=2.3.4",
+    "openai>=2.7.1",
+    "python-dotenv>=1.2.1",
 ]
 
 [project.optional-dependencies]

@@ -43,6 +43,7 @@ class LSystemMixin:
             )
 
             base = self._base_symbol(key)
+
             self.rules.setdefault(base, []).append((replacement, pattern, prob))
 
     def _make_regex(self, key: str):
@@ -97,7 +98,7 @@ class LSystemMixin:
         except Exception:
             return 0.0
 
-    def _apply_rule(self, rules, match):
+    def _apply_rule(self, pattern, rules, match):
         replacement, _, _ = self._pick_rule(rules)
         if isinstance(replacement, str):
             return replacement
@@ -115,7 +116,12 @@ class LSystemMixin:
         if len(args) < n_expected:
             args += [1.0] * (n_expected - len(args))
 
-        return replacement(*args)
+        # self.logger.info(
+        #     f"Pattern: {pattern}, matched: {match.group(0)}, args={args}, replacement={replacement}"
+        # )
+
+        result = replacement(*args)
+        return result
 
     def generate(self, n_iter: int = 1):
         """Apply all rules for n iterations."""
@@ -126,7 +132,7 @@ class LSystemMixin:
             for base, rules in self.rules.items():
                 pattern = rules[0][1]  # same regex for all rules under this symbol
                 new_state = re.sub(
-                    pattern, lambda m: self._apply_rule(rules, m), new_state
+                    pattern, lambda m: self._apply_rule(pattern, rules, m), new_state
                 )
             self.state = new_state
 

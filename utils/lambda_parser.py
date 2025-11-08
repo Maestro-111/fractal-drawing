@@ -44,13 +44,14 @@ class SafeLambdaParser:
         """
         # Normalize: convert {{ }} to { } for processing
         template = lambda_str.replace("{{", "{").replace("}}", "}")
-
-        # Extract parameter names and template
         param_names = self._extract_params(template)
+        expected_arg_count = len(param_names)
 
         # Create the lambda function
         def dynamic_lambda(*args):
-            # Bind parameters
+            if len(args) < expected_arg_count:
+                return ""  # fallback
+
             bindings = dict(zip(param_names, args))
 
             # Find all expressions in curly braces (non-greedy)
