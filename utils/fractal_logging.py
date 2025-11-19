@@ -7,8 +7,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 os.makedirs(os.path.join(BASE_DIR, "logs"), exist_ok=True)
 
-L_SYSTEM_LOG_FILE_NAME = f"{datetime.now():%Y_%m_%d-%I_%M_%S_%p}_" + "_l_system"
-DRAWER_LOG_FILE_NAME = f"{datetime.now():%Y_%m_%d-%I_%M_%S_%p}_" + "_drawer"
+L_SYSTEM_LOG_FILE_NAME = f"{datetime.now():%Y_%m_%d}_" + "_l_system"
+DRAWER_LOG_FILE_NAME = f"{datetime.now():%Y_%m_%d}_" + "_drawer"
 
 LOG_DIR = os.path.join(os.path.join(BASE_DIR, "logs"))
 

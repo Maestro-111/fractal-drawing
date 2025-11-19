@@ -218,3 +218,4 @@ __marimo__/
 fractals/
 agent_template.json
 .DS_Store
+.idea/

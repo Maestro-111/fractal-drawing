@@ -1,0 +1,74 @@
+{
+  "tree": {
+    "base_axiom": ["A"],
+    "rules": [
+      {
+        "pattern": "A",
+        "replacement": "F(1, 1)[+(angle)A][-(angle)A]",
+        "probability": 0.5,
+        "axiom": true
+      },
+      {
+        "pattern": "A",
+        "replacement": "F(1, 1)[++(angle)A][+(angle)A][-(angle)A][--(angle)A]",
+        "probability": 0.4,
+        "axiom": true
+      },
+      {
+        "pattern": "A",
+        "replacement": "F(1, 1)[-(angle)A]",
+        "probability": 0.05,
+        "axiom": true
+      },
+      {
+        "pattern": "A",
+        "replacement": "F(1, 1)[+(angle)A]",
+        "probability": 0.05,
+        "axiom": true
+      },
+      {
+        "pattern": "F(x,y)",
+        "replacement": "F({(1.2+random.triangular(-0.5, 0.5, random.gauss(0, 1)))*x}, {1.4*y})",
+        "probability": 1.0,
+        "is_parametric": true,
+        "axiom": false
+      },
+      {
+        "pattern": "+(x)",
+        "replacement": "+({x + random.triangular(-10, 10, random.gauss(0, 2))})",
+        "is_parametric": true,
+        "axiom": false
+      },
+      {
+        "pattern": "-(x)",
+        "replacement": "-({x + random.triangular(-10, 10, random.gauss(0, 2))})",
+        "is_parametric": true,
+        "axiom": false
+      }
+    ],
+    "params": {
+      "length": 15,
+      "width": 1,
+      "angle": 15,
+      "iterations": 9
+    },
+    "drawer_name": "tree"
+  },
+  "placeholder": {
+    "base_axiom": ["F"],
+    "rules": [
+      {
+        "pattern": "F",
+        "replacement": "F[+F]F[-F]F",
+        "probability": 1.0
+      }
+    ],
+    "params": {
+      "length": 10,
+      "width": 3,
+      "angle": 25,
+      "iterations": 6
+    },
+    "drawer_name": "tree"
+  }
+}

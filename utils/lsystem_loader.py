@@ -9,6 +9,7 @@ class Loader:
     def __init__(self, object_name: str, logger, templates_path: str):
         self.object_name = object_name
         self.logger = logger
+
         self.templates_path = templates_path
         self.lambda_parser = SafeLambdaParser()
 
@@ -17,12 +18,24 @@ class Loader:
 
         with open(self.templates_path, "r") as f:
             templates = json.load(f)
-            return templates.get(self.object_name, templates["placeholder"])
+            template = templates.get(self.object_name, templates["placeholder"])
+
+            base_axiom = template["base_axiom"]
+
+            allowed_symbols = set()
+            allowed_symbols.update(base_axiom)
+
+            for rule in template["rules"]:
+                symbols = [symbol for symbol in rule["pattern"]]
+                allowed_symbols.update(symbols)
+
+            return template, allowed_symbols
 
     def parse_rule(self, rule_dict):
         """Convert JSON rule dict to tuple format"""
 
         pattern = rule_dict["pattern"]
+
         probability = float(rule_dict.get("probability", 1.0))
         axiom = rule_dict.get("axiom", False)
 
@@ -74,12 +87,12 @@ class Loader:
             else:
                 rules.append((pattern, replacement, probability))
 
+        base_axiom = template["base_axiom"]
         params = template["params"]
         length = params["length"]
         width = params["width"]
         angle = params["angle"]
         iterations = params["iterations"]
-        base_axiom = template["base_axiom"]
 
         modified_axiom_rules = self.modify_axioms_with_base(
             axioms, angle, length, width
@@ -93,15 +106,13 @@ class Loader:
         return all_rules, length, angle, width, iterations, base_axiom
 
     def get_drawer(self, template):
-        """Return appropriate drawer based on color flag and object type"""
+        """Return appropriate drawer based on drawer type and object type"""
 
-        requires_color = template.get("supports_color", False)
+        drawer_name = template.get("drawer_name", "general")
 
-        self.logger.info(f"{self.object_name} requires color: {requires_color}")
+        self.logger.info(f"{self.object_name} requires drawer {drawer_name}")
 
-        from drawning.draw_2d import ColoredTreeSVGDrawer2D, SVGDrawer2D
+        from drawning.draw_2d import DrawersPile
 
-        if requires_color:
-            return ColoredTreeSVGDrawer2D
-        else:
-            return SVGDrawer2D
+        pile = DrawersPile()
+        return pile.get_drawer(drawer_name)

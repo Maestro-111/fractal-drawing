@@ -1,11 +1,14 @@
 import ast
 import inspect
 import random
-import re
+from typing import List
+
+from utils.fractal_regex import extract_symbol, parse_params
+from utils.tokenizer import LSystemLexer
 
 
 class LSystemMixin:
-    def __init__(self, axiom: str, logger):
+    def __init__(self, axiom: List[str], logger):
         self.axiom = axiom
         self.state = axiom
         self.logger = logger
@@ -35,47 +38,23 @@ class LSystemMixin:
 
             self.logger.info(f"Adding rule for : {key}")
 
-            pattern = self._make_regex(key)
-
             self.logger.info(
-                f"Generated pattern {pattern} for : {key} with the "
                 f"following replacement: {replacement} and probability: {prob}"
             )
 
-            base = self._base_symbol(key)
+            base = extract_symbol(key)
 
-            self.rules.setdefault(base, []).append((replacement, pattern, prob))
+            self.rules.setdefault(base, []).append((replacement, prob))
 
-    def _make_regex(self, key: str):
-        """
-        Match both parameterized and non-parameterized versions.
-        Avoid matching + or - inside numeric expressions.
-        """
-        if "(" not in key:
-            if key in {"+", "-"}:
-                return rf"(?<![\d.])\{key}(?:\(([^)]*)\))?"
-            return re.escape(key)
-
-        base = key.split("(")[0]
-        # optional parentheses with any number of comma-separated params
-        param_pattern = r"(?:\(([^)]*)\))?"
-        # also guard against matches inside numbers for + or -
-        if base in {"+", "-"}:
-            return rf"(?<![\d.])\{base}{param_pattern}"
-        return re.escape(base) + param_pattern
-
-    def _base_symbol(self, key: str):
-        """Return the symbol name before '(' if parameterized."""
-        return key.split("(")[0]
-
-    def _pick_rule(self, rules):
+    @staticmethod
+    def _pick_rule(rules):
         """Select a rule based on probabilities."""
         if len(rules) == 1:
             return rules[0]
         p = random.random()
         cumulative = 0
         for r in rules:
-            cumulative += r[2]
+            cumulative += r[1]
             if p <= cumulative:
                 return r
         return rules[-1]
@@ -98,47 +77,51 @@ class LSystemMixin:
         except Exception:
             return 0.0
 
-    def _apply_rule(self, pattern, rules, match):
-        replacement, _, _ = self._pick_rule(rules)
+    def _apply_rule(self, rules, token_params):
+        replacement, _ = self._pick_rule(rules)
+
         if isinstance(replacement, str):
             return replacement
-
-        params = match.group(1)
-        args = []
-        if params:
-            for p in params.split(","):
-                val = self._safe_eval_number(p)
-                args.append(val)
 
         # adjust arg count to lambda’s signature
         sig = inspect.signature(replacement)
         n_expected = len(sig.parameters)
-        if len(args) < n_expected:
-            args += [1.0] * (n_expected - len(args))
 
-        # self.logger.info(
-        #     f"Pattern: {pattern}, matched: {match.group(0)}, args={args}, replacement={replacement}"
-        # )
+        if len(token_params) < n_expected:
+            token_params += [1.0] * (n_expected - len(token_params))
 
-        result = replacement(*args)
+        result = replacement(*token_params)
         return result
 
     def generate(self, n_iter: int = 1):
         """Apply all rules for n iterations."""
+
         for i in range(n_iter):
             self.logger.info(f"Generating layer for {i}th iteration")
 
-            new_state = self.state
-            for base, rules in self.rules.items():
-                pattern = rules[0][1]  # same regex for all rules under this symbol
-                new_state = re.sub(
-                    pattern, lambda m: self._apply_rule(pattern, rules, m), new_state
-                )
+            new_state = []
+
+            for token in self.state:
+                token_base = extract_symbol(token)
+                token_params = parse_params(token)
+
+                token_rules = self.rules.get(token_base, [])
+
+                if not token_rules:
+                    new_state.append(token_base)
+                    continue
+
+                new_raw_str = self._apply_rule(token_rules, token_params)
+                tokenizer = LSystemLexer(new_raw_str)
+
+                new_token = tokenizer.tokenize()
+                new_state.extend(new_token)
+
             self.state = new_state
 
             self.logger.info(f"Finished generating layer for {i}th iteration")
             self.logger.info(
-                f"length {len(self.state)}; {self.state[:200]}... new state"
+                f"length {len(self.state)}; {self.state[:50]}... new state"
             )
 
         return self.state
